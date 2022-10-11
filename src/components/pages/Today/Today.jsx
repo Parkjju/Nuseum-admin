@@ -1,27 +1,49 @@
 import { CircularProgress } from '@mui/material';
 import axios from 'axios';
+import 'react-calendar/dist/Calendar.css';
+import './calendar.css';
 import { useRef, useState } from 'react';
 import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Tag, TagBox } from '../../atom/Tag';
 import { Contents } from '../Home/styled';
 // import { Box, Gauge } from '../Water/Water.style';
 import {
+    DiaryTitle,
     Image,
     ImageBox,
+    Name,
     Summary,
     SummaryTitle,
     VerticalImageBox,
 } from './Today.style';
+import { Calendar } from 'react-calendar';
+import { dateActions } from '../../../store/date-slice';
 
-const Today = ({ date }) => {
+const Today = () => {
+    const location = useLocation();
+    const token = useSelector((state) => state.auth.token);
+    const date = useSelector((state) => state.date.date);
+    const dispatch = useDispatch();
+
+    const fetchUserInformation = async () => {
+        try {
+            // const response = await axios.get(
+            //     `https://www.nuseum.site/api/v1/consumption/admin/?author=${location.state.id}`,
+            //     {
+            //         headers: {
+            //             Authorization: `Bearer ${token}`,
+            //         },
+            //     }
+            // );
+            // console.log(response);
+        } catch (error) {}
+    };
     useEffect(() => {
-        axios
-            .get('https://www.nuseum.site/api/v1/consumption/admin/')
-            .then((response) => console.log(response.data));
+        fetchUserInformation();
     }, []);
-    // const token = useSelector((state) => state.auth.token);
 
     // const username = localStorage.getItem('username');
     // const dispatch = useDispatch();
@@ -40,15 +62,19 @@ const Today = ({ date }) => {
     const [boxWidth, setBoxWidth] = useState(
         window.innerWidth > 800 ? 800 * 0.8 : window.innerWidth * 0.8
     );
-    window.onresize = () => {
-        setBoxWidth(boxRef.current.clientWidth);
+    // window.onresize = () => {
+    //     setBoxWidth(boxRef.current.clientWidth);
+    // };
+    const onChange = (d) => {
+        dispatch(dateActions.updateDate(d.getTime()));
     };
+    console.log(date);
 
-    window.onload = () => {
-        setBoxWidth(boxRef.current.clientWidth);
-    };
-    const boxRef = useRef();
-    const [waterAmount, setWaterAmount] = useState(0);
+    // window.onload = () => {
+    //     setBoxWidth(boxRef.current.clientWidth);
+    // };
+    // const boxRef = useRef();
+    // const [waterAmount, setWaterAmount] = useState(0);
 
     const [supplementImages, setSupplementImages] = useState([]);
 
@@ -56,7 +82,16 @@ const Today = ({ date }) => {
         <CircularProgress />
     ) : (
         <Contents>
-            <VerticalImageBox>
+            <DiaryTitle>
+                <Name>{location.state.id}</Name>
+            </DiaryTitle>
+            <Calendar
+                locale='en-US'
+                onChange={onChange}
+                value={new Date(date)}
+            />
+
+            <VerticalImageBox style={{ marginTop: 30 }}>
                 {/* {Object.values(mealImages).map((arr) =>
                     arr.map((item, index) => (
                         <ImageBox key={index}>
