@@ -12,6 +12,7 @@ function Router() {
                 <Route element={<Today />} path='/today' />
                 <Route element={<Login />} path='/login' />
                 <Route element={<Home />} path='/' />
+                <Route element={<Today />} path='/:userId' />
             </Routes>
         </BrowserRouter>
     );
