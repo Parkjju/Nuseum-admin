@@ -47,8 +47,7 @@ function Login() {
             console.log(response);
             dispatch(
                 authActions.login({
-                    accessToken: response.data.access_token,
-                    refreshToken: response.data.refresh_token,
+                    token: response.data.access_token,
                 })
             );
             window.sessionStorage.setItem('isLoggedIn', true);
@@ -81,8 +80,7 @@ function Login() {
 
                     dispatch(
                         authActions.login({
-                            accessToken: response.data.access_token,
-                            refreshToken: response.data.refresh_token,
+                            token: response.data.access_token,
                         })
                     );
                     window.sessionStorage.setItem('isLoggedIn', true);
