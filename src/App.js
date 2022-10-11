@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import { GlobalStyle } from './components/atom/Global';
-import { Container, Contents } from './components/pages/Home/styled';
-import Today from './components/pages/Today/Today';
 import Router from './router';
 
 axios.defaults.baseURL = 'https://www.nuseum.site';
