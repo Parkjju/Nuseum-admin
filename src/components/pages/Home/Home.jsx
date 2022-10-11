@@ -1,12 +1,52 @@
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Contents } from './styled';
+import { Link } from 'react-router-dom';
+import Title from '../../atom/Title';
+import { AnalysisBtn, Container, Contents, UserTab } from './styled';
 
 const Home = () => {
-    const token = useSelector((state) => state.auth.accessToken);
-    console.log(token);
+    const token = useSelector((state) => state.auth.token);
+    const [userList, setUserList] = useState([]);
+    const fetchUserList = async () => {
+        try {
+            const response = await axios.get(
+                'https://www.nuseum.site/api/v1/consumption/admin/',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            setUserList(response.data.userList);
+        } catch (error) {
+            alert('오류가 발생했습니다');
+        }
+    };
+
+    useEffect(() => {
+        fetchUserList();
+    }, []);
     return (
         <Container>
-            <Contents>HI</Contents>
+            <Contents>
+                <Title text='회원' />
+                {userList.map((item) => (
+                    <UserTab
+                        state={{
+                            id: item.username,
+                        }}
+                        to={`./${item.id}`}
+                        key={item.id}
+                    >
+                        {item.username}
+                        <AnalysisBtn to={`./${item.id}/analysis`}>
+                            분석
+                        </AnalysisBtn>
+                    </UserTab>
+                ))}
+            </Contents>
         </Container>
     );
 };
