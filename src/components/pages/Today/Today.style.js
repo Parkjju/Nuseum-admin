@@ -51,3 +51,24 @@ export const SummaryTitle = styled.p`
     font-size: 14px;
     text-decoration: 1px solid #7f8c8d underline;
 `;
+
+export const DiaryTitle = styled.div`
+    padding: 10px 0;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    /* &:hover {
+        background-color: #ecf0f1;
+        transition: 0.2s linear;
+    } */
+    span {
+        font-size: 16px;
+    }
+`;
+export const Name = styled.span`
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.8);
+    font-weight: bold;
+`;
