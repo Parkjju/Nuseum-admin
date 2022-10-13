@@ -72,7 +72,6 @@ const Today = () => {
 
     const [supplementImages, setSupplementImages] = useState([]);
 
-    console.log(date);
     return (
         <Contents>
             <DiaryTitle>

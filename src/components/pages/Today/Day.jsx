@@ -113,6 +113,34 @@ const Day = ({ item }) => {
                             >{`${meal.name} ${meal.amount}g 또는 ml`}</Tag>
                         ))}
                     </TagBox>
+
+                    <MealType>간식</MealType>
+                    {item[1].snack.image.length === 0 &&
+                    item[1].snack.data.length === 0 ? (
+                        <TagBox>
+                            <Tag
+                                style={{
+                                    opacity: 0.5,
+                                }}
+                            >
+                                입력된 데이터가 없습니다
+                            </Tag>
+                        </TagBox>
+                    ) : null}
+                    <VerticalImageBox>
+                        {item[1].snack.image.map((imageObject) => (
+                            <ImageBox key={imageObject.id}>
+                                <Image src={imageObject.image} />
+                            </ImageBox>
+                        ))}
+                    </VerticalImageBox>
+                    <TagBox>
+                        {item[1].snack.data.map((meal, index) => (
+                            <Tag
+                                key={index}
+                            >{`${meal.name} ${meal.amount}g 또는 ml`}</Tag>
+                        ))}
+                    </TagBox>
                 </>
 
                 <>
