@@ -44,12 +44,12 @@ function Login() {
                 password: loginPassword,
             });
 
-            console.log(response);
             dispatch(
                 authActions.login({
                     token: response.data.access_token,
                 })
             );
+
             window.sessionStorage.setItem('isLoggedIn', true);
 
             setIsLoading(false);
