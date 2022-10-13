@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Title from '../../atom/Title';
 import { AnalysisBtn, Container, Contents, UserTab } from './styled';
 
 const Home = () => {
     const token = useSelector((state) => state.auth.token);
     const [userList, setUserList] = useState([]);
+    const navigate = useNavigate();
     const fetchUserList = async () => {
         try {
             const response = await axios.get(
@@ -26,6 +27,10 @@ const Home = () => {
     };
 
     useEffect(() => {
+        if (window.sessionStorage.getItem('isLoggedIn') !== 'true') {
+            navigate('/login');
+            return;
+        }
         fetchUserList();
     }, []);
     return (
@@ -41,7 +46,12 @@ const Home = () => {
                         key={item.id}
                     >
                         {item.username}
-                        <AnalysisBtn to={`./${item.id}/analysis`}>
+                        <AnalysisBtn
+                            state={{
+                                id: item.username,
+                            }}
+                            to={`./${item.id}/analysis`}
+                        >
                             분석
                         </AnalysisBtn>
                     </UserTab>
