@@ -11,64 +11,58 @@ import { Tag, TagBox } from '../../atom/Tag';
 import { Contents } from '../Home/styled';
 // import { Box, Gauge } from '../Water/Water.style';
 import {
+    ButtonBox,
+    DayBox,
+    DayTitle,
     DiaryTitle,
+    FetchButton,
     Image,
     ImageBox,
+    MealType,
     Name,
+    SortBtn,
     Summary,
     SummaryTitle,
     VerticalImageBox,
 } from './Today.style';
 import { Calendar } from 'react-calendar';
 import { dateActions } from '../../../store/date-slice';
+import Day from './Day';
 
 const Today = () => {
     const location = useLocation();
     const token = useSelector((state) => state.auth.token);
     const date = useSelector((state) => state.date.date);
     const dispatch = useDispatch();
+    const [isSelected, setIsSelected] = useState([true, false, false]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [list, setList] = useState([]);
+    const [sortByLatest, setSortByLatest] = useState(true);
 
-    const fetchUserInformation = async () => {
+    const fetchData = async (type) => {
+        setIsLoading(true);
+        setIsSelected([true, false, false]);
         try {
-            // const response = await axios.get(
-            //     `https://www.nuseum.site/api/v1/consumption/admin/?author=${location.state.id}`,
-            //     {
-            //         headers: {
-            //             Authorization: `Bearer ${token}`,
-            //         },
-            //     }
-            // );
-            // console.log(response);
-        } catch (error) {}
+            const response = await axios.get(
+                `/api/v1/consumption/admin/sum/?author=${location.state.id}&date=${date}&type=${type}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            setList(response.data);
+            setIsLoading(false);
+        } catch (err) {
+            console.log(err);
+            setIsLoading(false);
+        }
     };
-    useEffect(() => {
-        fetchUserInformation();
-    }, []);
 
-    // const username = localStorage.getItem('username');
-    // const dispatch = useDispatch();
-
-    // const [loading, setLoading] = useState(false);
-    // const [foodTag, setFoodTag] = useState([]);
-    // const params = useParams();
-    // const [supplementInformation, setSupplementInformation] = useState([]);
-    // 이미지는 한번에 , 순서없이 나열만 진행
-    // const [mealImages, setMealImages] = useState({
-    //     breakfast: [],
-    //     lunch: [],
-    //     dinner: [],
-    //     snack: [],
-    // });
-    const [boxWidth, setBoxWidth] = useState(
-        window.innerWidth > 800 ? 800 * 0.8 : window.innerWidth * 0.8
-    );
-    // window.onresize = () => {
-    //     setBoxWidth(boxRef.current.clientWidth);
-    // };
-    const onChange = (d) => {
+    const onChange = async (d) => {
         dispatch(dateActions.updateDate(d.getTime()));
+        await fetchData('day');
     };
-    console.log(date);
 
     // window.onload = () => {
     //     setBoxWidth(boxRef.current.clientWidth);
@@ -78,9 +72,8 @@ const Today = () => {
 
     const [supplementImages, setSupplementImages] = useState([]);
 
-    return false ? (
-        <CircularProgress />
-    ) : (
+    console.log(date);
+    return (
         <Contents>
             <DiaryTitle>
                 <Name>{location.state.id}</Name>
@@ -90,74 +83,69 @@ const Today = () => {
                 onChange={onChange}
                 value={new Date(date)}
             />
+            {isLoading ? (
+                <CircularProgress />
+            ) : (
+                <>
+                    <ButtonBox>
+                        <FetchButton
+                            onClick={() => {
+                                fetchData('day');
+                            }}
+                            isClicked={isSelected[0]}
+                        >
+                            <span>이 날의 섭취 영양소</span>
+                            <span>확인하기</span>
+                        </FetchButton>
+                        <FetchButton
+                            onClick={() => {
+                                fetchData('week');
+                                setIsSelected([false, true, false]);
+                            }}
+                            isClicked={isSelected[1]}
+                        >
+                            <span>한 주간 섭취 영양소</span>
+                            <span>확인하기</span>
+                        </FetchButton>
+                        <FetchButton
+                            onClick={() => {
+                                fetchData('month');
+                                setIsSelected([false, false, true]);
+                            }}
+                            isClicked={isSelected[2]}
+                        >
+                            <span>한 달간 섭취 영양소</span>
+                            <span>확인하기</span>
+                        </FetchButton>
+                    </ButtonBox>
 
-            <VerticalImageBox style={{ marginTop: 30 }}>
-                {/* {Object.values(mealImages).map((arr) =>
-                    arr.map((item, index) => (
-                        <ImageBox key={index}>
-                            <Image src={item.image} />
-                        </ImageBox>
-                    ))
-                )} */}
-                {supplementImages.map((item, index) => (
-                    <ImageBox key={index}>
-                        <Image src={item} />
-                    </ImageBox>
-                ))}
-            </VerticalImageBox>
-            <Summary>
-                <SummaryTitle>오늘 먹은 음식</SummaryTitle>
-                <TagBox
-                    style={{ width: '80%', padding: '0px 30px', marginTop: 30 }}
-                >
-                    {[].map((item, index) => (
-                        <Tag
-                            key={index}
-                        >{`${item.name} ${item.amount}g 또는 ml`}</Tag>
-                    ))}
-                </TagBox>
-                <SummaryTitle>영양제</SummaryTitle>
-                <TagBox style={{ padding: '0px 30px', marginTop: 30 }}>
-                    {[].map((item, index) => (
-                        <Tag
-                            key={index}
-                        >{`${item.manufacturer} ${item.name}`}</Tag>
-                    ))}
-                </TagBox>
-                <SummaryTitle>오늘 섭취한 물의 양</SummaryTitle>
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        width: '90%',
-                        margin: '30px auto',
-                        fontSize: 14,
-                    }}
-                >
-                    <span>마신 양 : {100}ml</span>
-                    <span>
-                        남은 양 :{' '}
-                        {1500 - 100 > 0 ? 1500 - 100 : `+ ${100 - 1500}`}
-                        ml
-                    </span>
-                </div>
-                {/* <Box
-                    ref={boxRef}
-                    style={{
-                        width: '90%',
-                        margin: '0px auto',
-                        paddingBottom: 30,
-                    }}
-                >
-                    <Gauge
-                        water={waterAmount}
-                        maxWidth={boxWidth}
+                    <div
                         style={{
-                            maxWidth: '100%',
+                            width: '80%',
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            marginTop: 20,
                         }}
-                    />
-                </Box> */}
-            </Summary>
+                    >
+                        <SortBtn
+                            onClick={() => setSortByLatest((prev) => !prev)}
+                        >
+                            {sortByLatest
+                                ? '오래된 순으로 정렬'
+                                : '최신 순으로 정렬'}
+                        </SortBtn>
+                    </div>
+
+                    {Object.values(list).length > 0 && !sortByLatest
+                        ? Object.entries(list).map((item) => (
+                              <Day key={item[0]} item={item} />
+                          ))
+                        : Object.entries(list)
+                              .slice(0)
+                              .reverse()
+                              .map((item) => <Day key={item[0]} item={item} />)}
+                </>
+            )}
         </Contents>
     );
 };
