@@ -1,24 +1,24 @@
 import styled from 'styled-components';
 
 export const TabBox = styled.div`
-    width: 80%;
+    width: 90%;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
     background-color: white;
     height: 84px;
     padding: 20px;
     display: flex;
     align-items: center;
-    max-width: 400px;
+    max-width: 460px;
     margin: 0 auto;
+    margin-bottom: 30px;
+    cursor: pointer;
 `;
 
-export const TabTitle = styled.p`
-    width: 46px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 30px;
+export const TabTitle = styled.span`
+    margin-right: 20px;
+    width: 80px;
+    text-align: center;
+    line-height: 1.5;
 `;
 
 export const TabContents = styled.div`
@@ -34,7 +34,8 @@ export const TabInput = styled.input`
     height: 20px;
     font-size: 13px;
     width: 100%;
-    border: 1px solid #bfc5c6;
+    border: none;
+    border-bottom: 1px solid #bfc5c6;
     &:focus {
         outline: none;
     }
