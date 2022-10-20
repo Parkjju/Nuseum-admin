@@ -90,7 +90,7 @@ export const FetchButton = styled.button`
     background-color: ${(props) => (props.isClicked ? '#8D8D8D' : '#f1f1f1')};
     border-radius: 80px;
     color: ${(props) => (props.isClicked ? 'white' : 'black')};
-    width: 33.3%;
+    width: 25%;
     padding: 10px 3px;
     font-size: 8px;
     border: none;
