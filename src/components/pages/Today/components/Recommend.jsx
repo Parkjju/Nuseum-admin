@@ -3,14 +3,19 @@ import { Draggable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { groupActions } from '../../../../store/group-slice';
-import { TabBox, TabContents, TabInput, TabTitle } from './Recommend.styled';
+import {
+    SubList,
+    TabBox,
+    TabContents,
+    TabInput,
+    TabTitle,
+} from './Recommend.styled';
 
-const Recommend = ({ name, index }) => {
-    const [main, setMain] = useState('');
-    const [subText, setSubText] = useState('');
+const Recommend = ({ name, index, id }) => {
     const group = useSelector((state) => state.group.group);
+    const [main, setMain] = useState(group.data[index].main);
+    const [subText, setSubText] = useState('');
     const dispatch = useDispatch();
-
     const onChangeMain = (e) => {
         setMain(e.target.value);
         const modifiedIndex = group.data.findIndex(
@@ -41,6 +46,12 @@ const Recommend = ({ name, index }) => {
 
             setSubText('');
         }
+    };
+
+    const removeSubList = (id, index) => {
+        console.log(group.data);
+
+        dispatch(groupActions.removeContent({ id, index }));
     };
 
     return (
@@ -78,16 +89,14 @@ const Recommend = ({ name, index }) => {
                             {group.data
                                 .filter((item) => item.type === name)[0]
                                 .list.map((item, index) => (
-                                    <span
-                                        style={{
-                                            marginRight: 5,
-                                            fontSize: 12,
-                                            marginBottom: 5,
+                                    <SubList
+                                        onClick={() => {
+                                            removeSubList(id, index);
                                         }}
                                         key={index}
                                     >
                                         {item}
-                                    </span>
+                                    </SubList>
                                 ))}
                         </div>
                     </TabContents>
