@@ -3,7 +3,7 @@ import axios from 'axios';
 import 'react-calendar/dist/Calendar.css';
 import './calendar.css';
 import { useEffect, useState } from 'react';
-
+import handleExpired from '../../../helpers/handleExpired';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { Contents } from '../Home/styled';
@@ -17,15 +17,10 @@ import {
 import { Calendar } from 'react-calendar';
 import { dateActions } from '../../../store/date-slice';
 import Day from './components/Day';
-import Recommend from './components/Recommend';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import {
-    TabBox,
-    TabContents,
-    TabInput,
-    TabTitle,
-} from './components/Recommend.styled';
+import { DragDropContext } from 'react-beautiful-dnd';
 import { groupActions } from '../../../store/group-slice';
+import RecommendTab from './components/RecommendTab';
+import { authActions } from '../../../store/auth-slice';
 
 const Today = () => {
     const location = useLocation();
@@ -36,10 +31,7 @@ const Today = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [list, setList] = useState([]);
     const [sortByLatest, setSortByLatest] = useState(true);
-    const [loading, setLoading] = useState(false);
-    const [isOrderChanged, setIsOrderChanged] = useState(false);
-    const [order, setOrder] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-    const [comment, setComment] = useState('');
+
     const group = useSelector((state) => state.group.group);
 
     const fetchData = async (type) => {
@@ -61,64 +53,56 @@ const Today = () => {
             setList(response.data);
             setIsLoading(false);
         } catch (err) {
-            console.log(err);
+            if (err.response.status === 401) {
+                const { exp, token } = await handleExpired();
+                dispatch(
+                    authActions.login({
+                        token: token.data.access,
+                        exp,
+                    })
+                );
+            } else {
+                alert('오류가 발생했습니다. 담당자에게 문의해주세요!');
+            }
             setIsLoading(false);
         }
     };
 
-    const onChange = async (d) => {
-        setOrder([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
-        setIsOrderChanged((prev) => !prev);
+    const onChange = (d) => {
         dispatch(dateActions.updateDate(d.getTime()));
-        await fetchData('day');
-        await fetchRecommendationData();
+        dispatch(groupActions.removeAll());
     };
 
-    const saveRecommendation = async () => {
-        setLoading(true);
-        try {
-            await axios.post(
-                '/api/v1/recommendation/admin/',
-                {
-                    target: location.state.id,
-                    created_at: `${date}`,
-                    data: [...group.data],
-                    comment,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setLoading(false);
-            alert('맞춤식품 추천이 완료되었습니다.');
-        } catch (err) {
-            console.log(err);
-            setLoading(false);
-            alert('로그인을 다시 해주세요');
-        }
-    };
+    useEffect(() => {
+        fetchData('day');
+        fetchRecommendationData();
+    }, [date, token]);
 
     const onDragEnd = ({ destination, source }) => {
         if (!destination) return;
-        console.log(source);
+        let sorted = [...group.data].sort(
+            (item1, item2) => item1.order - item2.order
+        );
+        // 재정렬 후 index초기화
 
-        setOrder((prev) => {
-            const copy = [...prev];
-            const deletedData = copy.splice(source.index, 1);
-            copy.splice(destination.index, 0, deletedData[0]);
+        const sourceData = sorted.splice(source.index, 1);
+        sorted.splice(destination.index, 0, sourceData[0]);
 
-            return [...copy];
-        });
+        // 객체 immutable을 위해 빈 배열 생성
+        let emptyArray = [];
+        // 카운트 변수로 인덱싱
+        let count = 0;
 
-        setIsOrderChanged((prev) => !prev);
+        for (let obj of sorted) {
+            let modifiedObject = { ...obj };
+            modifiedObject.order = count;
+            emptyArray.push(modifiedObject);
+            count += 1;
+        }
+        dispatch(
+            groupActions.updateGroup({ sorted: emptyArray, sortNeed: true })
+        );
     };
-
-    console.log(group);
-    useEffect(() => {
-        dispatch(groupActions.updateOrder({ newOrder: [...order] }));
-    }, [isOrderChanged]);
 
     const fetchRecommendationData = async () => {
         try {
@@ -130,14 +114,36 @@ const Today = () => {
                     },
                 }
             );
-            console.log(response);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+            console.log(response.data);
 
-    const onChangeComment = (e) => {
-        setComment(e.target.value);
+            dispatch(groupActions.fetched(response.data.id));
+            dispatch(
+                groupActions.updateGroup({
+                    data: response.data.data.sort(
+                        (item1, item2) => item1.order - item2.order
+                    ),
+                    comment: response.data.comment,
+                })
+            );
+        } catch (err) {
+            if (err.response.status === 401) {
+                const { exp, token } = await handleExpired();
+                dispatch(
+                    authActions.login({
+                        token: token.data.access,
+                        exp,
+                    })
+                );
+            } else if (
+                err.response.data.err_msg ===
+                '해당 날짜에 입력한 데이터가 없습니다.'
+            ) {
+                return;
+            } else {
+                console.log(err);
+                alert('오류가 발생했습니다. 담당자에게 문의해주세요!');
+            }
+        }
     };
 
     return (
@@ -214,73 +220,7 @@ const Today = () => {
                             </div>
                         )}
                         {isSelected[3] ? (
-                            <Droppable droppableId='recommend'>
-                                {(magic) => (
-                                    <div
-                                        ref={magic.innerRef}
-                                        {...magic.droppableProps}
-                                        style={{ padding: '30px 0' }}
-                                    >
-                                        {console.log(order)}
-                                        {order.map((idx, index) => (
-                                            <Recommend
-                                                name={group.data[idx].type}
-                                                index={index}
-                                                key={group.data[idx].id}
-                                            />
-                                        ))}
-                                        {/* {group.data.map((item, index) => (
-                                            <Recommend
-                                                name={
-                                                    group.data[item.order].type
-                                                }
-                                                index={index}
-                                                key={group.data[item.order].id}
-                                            />
-                                        ))} */}
-                                        <TabBox
-                                            style={{
-                                                cursor: 'default',
-                                                height: 300,
-                                                alignItems: 'flex-start',
-                                            }}
-                                        >
-                                            <TabTitle>코멘트</TabTitle>
-                                            <TabContents>
-                                                <TabInput
-                                                    as='textarea'
-                                                    rows={2}
-                                                    value={comment}
-                                                    onChange={onChangeComment}
-                                                    style={{
-                                                        resize: 'none',
-                                                        height: 280,
-                                                        padding: 5,
-                                                        cursor: 'default',
-                                                        border: '1px solid #EEEEEE',
-                                                    }}
-                                                    placeholder='내용을 작성해주세요'
-                                                />
-                                            </TabContents>
-                                        </TabBox>
-
-                                        {loading ? (
-                                            <CircularProgress />
-                                        ) : (
-                                            <button
-                                                style={{
-                                                    display: 'block',
-                                                    margin: '0 auto',
-                                                }}
-                                                onClick={saveRecommendation}
-                                            >
-                                                저장
-                                            </button>
-                                        )}
-                                        {magic.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
+                            <RecommendTab droppableId='recommend' />
                         ) : null}
 
                         {Object.values(list).length > 0 && !sortByLatest
