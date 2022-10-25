@@ -40,3 +40,13 @@ export const TabInput = styled.input`
         outline: none;
     }
 `;
+
+export const SubList = styled.span`
+    margin-right: 5px;
+    font-size: 12px;
+    margin-bottom: 5px;
+    &:hover {
+        opacity: 0.5;
+    }
+    cursor: pointer;
+`;
