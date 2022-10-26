@@ -92,6 +92,20 @@ const initialState = {
     },
     isFetched: null,
 };
+const foodKey = {
+    과일: 0,
+    채소: 1,
+    '콩/두부': 2,
+    통곡물: 3,
+    버섯: 4,
+    해조류: 5,
+    견과: 6,
+    '고기/생선/달걀': 7,
+    유제품: 8,
+    '가공 식품': 9,
+    영양제: 10,
+    주의: 11,
+};
 const groupSlice = createSlice({
     name: 'group',
     initialState,
@@ -112,10 +126,9 @@ const groupSlice = createSlice({
                     comment: action.payload.comment,
                 };
 
-                let id = 0;
                 for (let index in state.group.data) {
-                    state.group.data[index].id = id;
-                    id += 1;
+                    state.group.data[index].id =
+                        foodKey[state.group.data[index].type];
                 }
             }
         },
