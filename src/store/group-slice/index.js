@@ -142,10 +142,9 @@ const groupSlice = createSlice({
                 action.payload.newElement;
         },
         removeContent(state, action) {
-            state.group.data[action.payload.id].list.splice(
-                action.payload.index,
-                1
-            );
+            state.group.data
+                .filter((item) => item.id === action.payload.id)[0]
+                .list.splice(action.payload.index, 1);
         },
         fetched(state, action) {
             state.isFetched = action.payload;

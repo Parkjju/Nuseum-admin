@@ -49,8 +49,6 @@ const Recommend = ({ name, index, id }) => {
     };
 
     const removeSubList = (id, index) => {
-        console.log(group.data);
-
         dispatch(groupActions.removeContent({ id, index }));
     };
 
