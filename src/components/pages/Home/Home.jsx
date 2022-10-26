@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import handleExpired from '../../../helpers/handleExpired';
+import { authActions } from '../../../store/auth-slice';
 import Title from '../../atom/Title';
 import { AnalysisBtn, Container, Contents, UserTab } from './styled';
 
@@ -9,6 +12,7 @@ const Home = () => {
     const token = useSelector((state) => state.auth.token);
     const [userList, setUserList] = useState([]);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const fetchUserList = async () => {
         try {
             const response = await axios.get(
@@ -21,8 +25,19 @@ const Home = () => {
             );
 
             setUserList(response.data.userList);
-        } catch (error) {
-            alert('오류가 발생했습니다');
+        } catch (err) {
+            console.log(err);
+            if (err.response.status === 401) {
+                const { exp, token } = await handleExpired();
+                dispatch(
+                    authActions.login({
+                        token: token.data.access,
+                        exp,
+                    })
+                );
+            } else {
+                alert('오류가 발생했습니다. ');
+            }
         }
     };
 
@@ -32,7 +47,7 @@ const Home = () => {
             return;
         }
         fetchUserList();
-    }, []);
+    }, [token]);
     return (
         <Container>
             <Contents>
