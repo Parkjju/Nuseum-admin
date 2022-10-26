@@ -114,7 +114,6 @@ const Today = () => {
                     },
                 }
             );
-            console.log(response.data);
 
             dispatch(groupActions.fetched(response.data.id));
             dispatch(
