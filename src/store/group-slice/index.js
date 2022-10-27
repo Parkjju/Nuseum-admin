@@ -89,6 +89,7 @@ const initialState = {
             },
         ],
         comment: '',
+        hashTag: [],
     },
     isFetched: null,
 };
@@ -124,6 +125,7 @@ const groupSlice = createSlice({
                 state.group = {
                     data: [...action.payload.data],
                     comment: action.payload.comment,
+                    hashTag: action.payload.hashTag,
                 };
 
                 for (let index in state.group.data) {
