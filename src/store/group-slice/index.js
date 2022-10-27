@@ -125,7 +125,11 @@ const groupSlice = createSlice({
                 state.group = {
                     data: [...action.payload.data],
                     comment: action.payload.comment,
-                    hashTag: action.payload.hashTag,
+                    hashTag: [
+                        ...action.payload.hashTag.map((item) =>
+                            item === '' ? '' : `#${item}`
+                        ),
+                    ],
                 };
 
                 for (let index in state.group.data) {
@@ -243,6 +247,7 @@ const groupSlice = createSlice({
                 },
             ];
             state.isFetched = false;
+            state.group.hashTag = [];
         },
         updateComment(state, action) {
             state.group.comment = action.payload;
