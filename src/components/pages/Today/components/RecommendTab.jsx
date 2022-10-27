@@ -9,7 +9,13 @@ import handleExpired from '../../../../helpers/handleExpired';
 import { authActions } from '../../../../store/auth-slice';
 import { groupActions } from '../../../../store/group-slice';
 import Recommend from './Recommend';
-import { TabBox, TabContents, TabInput, TabTitle } from './Recommend.styled';
+import {
+    SubList,
+    TabBox,
+    TabContents,
+    TabInput,
+    TabTitle,
+} from './Recommend.styled';
 
 const RecommendTab = ({ droppableId }) => {
     const group = useSelector((state) => state.group.group);
@@ -21,10 +27,13 @@ const RecommendTab = ({ droppableId }) => {
     const onChangeComment = (e) => {
         setComment(e.target.value);
     };
+
+    const [hashTagList, setHashTagList] = useState([...group.hashTag]);
+    const [hashTag, setHashTag] = useState('');
     const date = useSelector((state) => state.date.date);
 
     const isFetched = useSelector((state) => state.group.isFetched);
-
+    console.log('hashTagList: ', hashTagList.join(''));
     const saveRecommendation = async () => {
         setLoading(true);
         try {
@@ -34,6 +43,10 @@ const RecommendTab = ({ droppableId }) => {
                     {
                         data: [...group.data],
                         comment,
+                        hashtag:
+                            hashTagList.length !== 0
+                                ? hashTagList.join('')
+                                : '',
                     },
                     {
                         headers: {
@@ -50,6 +63,10 @@ const RecommendTab = ({ droppableId }) => {
                         created_at: `${date}`,
                         data: [...group.data],
                         comment,
+                        hashtag:
+                            hashTagList.length !== 0
+                                ? hashTagList.join('')
+                                : '',
                     },
                     {
                         headers: {
@@ -74,6 +91,16 @@ const RecommendTab = ({ droppableId }) => {
                 alert('오류가 발생했습니다. 담당자에게 문의해주세요!');
             }
             setLoading(false);
+        }
+    };
+    const onChangeHashTag = (e) => {
+        setHashTag(e.target.value);
+    };
+    const onKeyDown = (e) => {
+        if (e.keyCode === 13) {
+            if (e.target.value === '') return;
+            setHashTagList((prev) => [...prev, e.target.value]);
+            setHashTag('');
         }
     };
 
@@ -119,6 +146,42 @@ const RecommendTab = ({ droppableId }) => {
                                 }}
                                 placeholder='내용을 작성해주세요'
                             />
+                        </TabContents>
+                    </TabBox>
+
+                    <TabBox>
+                        <TabTitle>해시태그</TabTitle>
+                        <TabContents>
+                            <TabInput
+                                onKeyDown={onKeyDown}
+                                onChange={onChangeHashTag}
+                                value={hashTag}
+                                placeholder='#해시태그 입력 후 엔터'
+                            />
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    marginTop: 5,
+                                    width: '100%',
+                                    flexWrap: 'wrap',
+                                }}
+                            >
+                                {hashTagList.map((item, index) =>
+                                    item === '' ? null : (
+                                        <SubList
+                                            onClick={() => {
+                                                setHashTagList((prev) => [
+                                                    ...prev.slice(0, index),
+                                                    ...prev.slice(index + 1),
+                                                ]);
+                                            }}
+                                            key={index}
+                                        >
+                                            {item}
+                                        </SubList>
+                                    )
+                                )}
+                            </div>
                         </TabContents>
                     </TabBox>
 
