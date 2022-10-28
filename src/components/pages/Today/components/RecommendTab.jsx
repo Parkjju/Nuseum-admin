@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import handleExpired from '../../../../helpers/handleExpired';
 import { authActions } from '../../../../store/auth-slice';
-import { groupActions } from '../../../../store/group-slice';
+import Preview from '../../Preview';
 import Recommend from './Recommend';
 import {
     SubList,
@@ -27,6 +27,7 @@ const RecommendTab = ({ droppableId }) => {
     const onChangeComment = (e) => {
         setComment(e.target.value);
     };
+    const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
     const [hashTagList, setHashTagList] = useState([...group.hashTag]);
     const [hashTag, setHashTag] = useState('');
@@ -188,16 +189,31 @@ const RecommendTab = ({ droppableId }) => {
                     {loading ? (
                         <CircularProgress />
                     ) : (
-                        <button
+                        <div
                             style={{
-                                display: 'block',
+                                width: '30%',
+                                display: 'flex',
+                                justifyContent: 'space-between',
                                 margin: '0 auto',
                             }}
-                            onClick={saveRecommendation}
                         >
-                            저장
-                        </button>
+                            <button onClick={saveRecommendation}>저장</button>
+                            <button
+                                onClick={() =>
+                                    setIsPreviewVisible((prev) => !prev)
+                                }
+                            >
+                                미리보기
+                            </button>
+                        </div>
                     )}
+                    {isPreviewVisible ? (
+                        <Preview
+                            hashtag={group.hashTag}
+                            recommend={group.data}
+                            comment={group.comment}
+                        />
+                    ) : null}
                     {magic.placeholder}
                 </div>
             )}
