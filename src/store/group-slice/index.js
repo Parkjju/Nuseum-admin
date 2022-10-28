@@ -120,6 +120,7 @@ const groupSlice = createSlice({
                 state.group = {
                     data: [...arr],
                     comment: action.payload.comment,
+                    hashTag: state.group.hashTag,
                 };
             } else {
                 state.group = {
