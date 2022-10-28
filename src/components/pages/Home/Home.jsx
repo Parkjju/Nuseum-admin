@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import handleExpired from '../../../helpers/handleExpired';
 import { authActions } from '../../../store/auth-slice';
 import Title from '../../atom/Title';
@@ -56,6 +56,7 @@ const Home = () => {
                     <UserTab
                         state={{
                             id: item.username,
+                            userId: item.id,
                         }}
                         to={`./${item.id}`}
                         key={item.id}
