@@ -24,9 +24,11 @@ const Preview = ({ comment, hashtag, recommend }) => {
 
             <Title>내 아이 맞춤식품</Title>
             <CurationDataWrapper rows={recommend.length / 2}>
-                {recommend.map((item, index) => (
-                    <CurationData data={item} key={index} />
-                ))}
+                {[...recommend]
+                    .sort((item1, item2) => item1.order - item2.order)
+                    .map((item, index) => (
+                        <CurationData data={item} key={index} />
+                    ))}
             </CurationDataWrapper>
             <CommentBox>
                 {comment}
