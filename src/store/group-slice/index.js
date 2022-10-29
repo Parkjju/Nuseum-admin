@@ -253,6 +253,9 @@ const groupSlice = createSlice({
         updateComment(state, action) {
             state.group.comment = action.payload;
         },
+        updateHashtag(state, action) {
+            state.group.hashTag = [...action.payload];
+        },
     },
 });
 

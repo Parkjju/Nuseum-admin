@@ -1,13 +1,15 @@
 import { CircularProgress } from '@mui/material';
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import handleExpired from '../../../../helpers/handleExpired';
 import { authActions } from '../../../../store/auth-slice';
+import { groupActions } from '../../../../store/group-slice';
 import Preview from '../../Preview';
+import CSVReader from 'react-csv-reader';
 import Recommend from './Recommend';
 import {
     SubList,
@@ -16,6 +18,13 @@ import {
     TabInput,
     TabTitle,
 } from './Recommend.styled';
+
+const parserOptions = {
+    header: false,
+    dynamicTyping: true,
+    skipEmptyLines: true,
+    // transformHeader: (header) => header.toLowerCase().replace(/\W/g, '_'),
+};
 
 const RecommendTab = ({ droppableId }) => {
     const group = useSelector((state) => state.group.group);
@@ -26,15 +35,17 @@ const RecommendTab = ({ droppableId }) => {
     const token = useSelector((state) => state.auth.token);
     const onChangeComment = (e) => {
         setComment(e.target.value);
+        dispatch(groupActions.updateComment(e.target.value));
     };
     const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
-    const [hashTagList, setHashTagList] = useState([...group.hashTag]);
+    const [hashTagList, setHashTagList] = useState(
+        group.hashTag.length > 0 ? [...group.hashTag] : []
+    );
     const [hashTag, setHashTag] = useState('');
     const date = useSelector((state) => state.date.date);
 
     const isFetched = useSelector((state) => state.group.isFetched);
-    console.log('hashTagList: ', hashTagList.join(''));
     const saveRecommendation = async () => {
         setLoading(true);
         try {
@@ -101,10 +112,17 @@ const RecommendTab = ({ droppableId }) => {
         if (e.keyCode === 13) {
             if (e.target.value === '') return;
             setHashTagList((prev) => [...prev, e.target.value]);
+
             setHashTag('');
         }
     };
-
+    useEffect(() => {
+        dispatch(groupActions.updateHashtag(hashTagList));
+    }, [hashTagList.length]);
+    const onLoadCSV = (data, fileInfo) => {
+        console.log(data);
+    };
+    console.log('hashtg', group);
     return (
         <Droppable droppableId={droppableId}>
             {(magic) => (
@@ -113,6 +131,12 @@ const RecommendTab = ({ droppableId }) => {
                     {...magic.droppableProps}
                     style={{ padding: '30px 0' }}
                 >
+                    {/* <CSVReader
+                        cssClass='react-csv-input'
+                        label='맞춤식품 CSV파일을 업로드해주세요.'
+                        onFileLoaded={onLoadCSV}
+                        parserOptions={parserOptions}
+                    /> */}
                     {[...group.data]
                         .sort((item1, item2) => item1.order - item2.order)
                         .map((obj, index) => (
