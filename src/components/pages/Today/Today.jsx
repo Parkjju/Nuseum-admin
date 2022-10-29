@@ -116,6 +116,7 @@ const Today = () => {
             );
 
             dispatch(groupActions.fetched(response.data.id));
+
             dispatch(
                 groupActions.updateGroup({
                     data: response.data.data.sort(

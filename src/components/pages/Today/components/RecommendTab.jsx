@@ -122,7 +122,7 @@ const RecommendTab = ({ droppableId }) => {
     const onLoadCSV = (data, fileInfo) => {
         console.log(data);
     };
-    console.log('hashtg', group);
+
     return (
         <Droppable droppableId={droppableId}>
             {(magic) => (
