@@ -19,8 +19,6 @@ ChartJS.register(
 ChartJS.defaults.font.size = 8;
 
 const RadarGraph = ({ dateCount, data }) => {
-    console.log('datecount: ', dateCount);
-    console.log('datat:::::', data);
     let dataForRadar = {
         labels: [
             // 'A',
@@ -54,7 +52,7 @@ const RadarGraph = ({ dateCount, data }) => {
                         ? 100
                         : ((+data.dha_epa / (300 * dateCount)) * 100).toFixed(
                               1
-                          ) * 100,
+                          ),
                     ((+data.folic_acid / (180 * dateCount)) * 100).toFixed(1) >
                     100
                         ? 100
