@@ -131,9 +131,11 @@ export const MealType = styled(DayTitle)`
 `;
 
 export const SortBtn = styled.button`
-    background-color: #f1f1f1;
+    cursor: pointer;
+    background-color: ${(props) => (props.isClicked ? '#8d8d8d' : '#F1F1F1')};
+    color: ${(props) => (props.isClicked ? 'white' : 'black')};
     border-radius: 5px;
-    border: 1px solid rgba(0, 0, 0, 0.7);
+    border: none;
     padding: 8px;
     font-size: 12px;
 `;
@@ -153,6 +155,7 @@ export const Tag = styled.div`
     color: white;
     margin-right: 5px;
     margin-bottom: 5px;
+    cursor: pointer;
 `;
 
 export const Gauge = styled.div`
