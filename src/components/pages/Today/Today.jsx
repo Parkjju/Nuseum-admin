@@ -31,6 +31,7 @@ const Today = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [list, setList] = useState([]);
     const [sortByLatest, setSortByLatest] = useState(true);
+    const [isModifying, setIsModifying] = useState(false);
 
     const group = useSelector((state) => state.group.group);
 
@@ -50,6 +51,7 @@ const Today = () => {
                     },
                 }
             );
+
             setList(response.data);
             setIsLoading(false);
         } catch (err) {
@@ -210,13 +212,20 @@ const Today = () => {
                                 }}
                             >
                                 <SortBtn
+                                    onClick={() => {
+                                        setIsModifying((prev) => !prev);
+                                    }}
+                                    isClicked={isModifying}
+                                >
+                                    추가하기
+                                </SortBtn>
+                                <SortBtn
                                     onClick={() =>
                                         setSortByLatest((prev) => !prev)
                                     }
+                                    isClicked={sortByLatest}
                                 >
-                                    {sortByLatest
-                                        ? '오래된 순으로 정렬'
-                                        : '최신 순으로 정렬'}
+                                    {sortByLatest ? '오래된 순' : '최신 순'}
                                 </SortBtn>
                             </div>
                         )}
@@ -226,13 +235,23 @@ const Today = () => {
 
                         {Object.values(list).length > 0 && !sortByLatest
                             ? Object.entries(list).map((item) => (
-                                  <Day key={item[0]} item={item} />
+                                  <Day
+                                      key={item[0]}
+                                      isModify={isModifying}
+                                      item={item}
+                                      refetchToday={fetchData}
+                                  />
                               ))
                             : Object.entries(list)
                                   .slice(0)
                                   .reverse()
                                   .map((item) => (
-                                      <Day key={item[0]} item={item} />
+                                      <Day
+                                          key={item[0]}
+                                          isModify={isModifying}
+                                          item={item}
+                                          refetchToday={fetchData}
+                                      />
                                   ))}
                     </>
                 )}
