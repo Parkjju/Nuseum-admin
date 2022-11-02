@@ -8,7 +8,6 @@ import {
 } from './Preview.styled';
 
 const Preview = ({ comment, hashtag, recommend }) => {
-    console.log('recommmm:', recommend);
     return (
         <div
             style={{
