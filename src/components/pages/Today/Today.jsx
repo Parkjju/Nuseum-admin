@@ -214,6 +214,7 @@ const Today = () => {
                                 <SortBtn
                                     onClick={() => {
                                         setIsModifying((prev) => !prev);
+                                        fetchData('day');
                                     }}
                                     isClicked={isModifying}
                                 >
