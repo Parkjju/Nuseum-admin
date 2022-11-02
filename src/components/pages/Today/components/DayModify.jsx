@@ -72,7 +72,19 @@ const DayModify = () => {
                     <RadioLabel>간식</RadioLabel>
                 </RadioWrapper>
             </RadioBox>
-            <Search />
+            <Search
+                type={
+                    type[0]
+                        ? 'breakfast'
+                        : type[1]
+                        ? 'lunch'
+                        : type[2]
+                        ? 'dinner'
+                        : type[3]
+                        ? 'snack'
+                        : null
+                }
+            />
         </div>
     );
 };
