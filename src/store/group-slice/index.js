@@ -114,9 +114,9 @@ const groupSlice = createSlice({
         updateGroup(state, action) {
             if (action.payload?.sortNeed) {
                 let copy = [...action.payload.sorted];
-                console.log('dispatch sorted', action.payload.sorted);
+
                 let arr = [...copy.sort((item1, item2) => item1.id - item2.id)];
-                console.log('arr', arr);
+
                 state.group = {
                     data: [...arr],
                     comment: action.payload.comment,

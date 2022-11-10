@@ -66,7 +66,6 @@ const RecommendTab = ({ droppableId }) => {
                         },
                     }
                 );
-                console.log(response);
             } else {
                 await axios.post(
                     '/api/v1/recommendation/admin/',
@@ -119,9 +118,6 @@ const RecommendTab = ({ droppableId }) => {
     useEffect(() => {
         dispatch(groupActions.updateHashtag(hashTagList));
     }, [hashTagList.length]);
-    const onLoadCSV = (data, fileInfo) => {
-        console.log(data);
-    };
 
     return (
         <Droppable droppableId={droppableId}>

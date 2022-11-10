@@ -38,12 +38,7 @@ function SearchResult({ data, type }) {
                 alert('하나 이상의 데이터를 추가해주세요!');
                 return;
             }
-            console.log('posting', {
-                type,
-                created_at: date,
-                author: location.state.id,
-                consumptions: [...tag],
-            });
+
             const response = await axios.post(
                 'https://www.nuseum.site/api/v1/consumption/admin/addition/',
                 {
@@ -60,7 +55,6 @@ function SearchResult({ data, type }) {
             );
             alert('저장이 완료되었습니다.');
             setTag([]);
-            console.log(response);
         } catch (error) {
             if (error.response.status === 401) {
                 const { exp, token } = await handleExpired();

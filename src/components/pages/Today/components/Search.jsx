@@ -35,7 +35,6 @@ const Search = ({ type }) => {
                     alert('검색 결과가 없어요!');
                 } else {
                     setSearchResult(response.data.results);
-                    console.log(response.data);
                 }
                 setSearchParam(searchFoodName);
             })
