@@ -13,16 +13,14 @@ const Home = () => {
     const [userList, setUserList] = useState([]);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const fetchUserList = async () => {
         try {
-            const response = await axios.get(
-                'https://www.nuseum.site/api/v1/consumption/admin/',
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const response = await axios.get('/api/v1/consumption/admin/', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             setUserList(response.data.userList);
         } catch (err) {
@@ -62,14 +60,32 @@ const Home = () => {
                         key={item.id}
                     >
                         {item.username}
-                        <AnalysisBtn
-                            state={{
-                                id: item.username,
+                        <div
+                            style={{
+                                position: 'relative',
+                                right: 0,
+                                width: 160,
+                                display: 'flex',
+                                justifyContent: 'space-between',
                             }}
-                            to={`./${item.id}/analysis`}
                         >
-                            분석
-                        </AnalysisBtn>
+                            <AnalysisBtn
+                                state={{
+                                    id: item.username,
+                                }}
+                                to={`./question`}
+                            >
+                                Q&A
+                            </AnalysisBtn>
+                            <AnalysisBtn
+                                state={{
+                                    id: item.username,
+                                }}
+                                to={`./${item.id}/analysis`}
+                            >
+                                분석
+                            </AnalysisBtn>
+                        </div>
                     </UserTab>
                 ))}
             </Contents>
