@@ -4,6 +4,7 @@ import { GlobalStyle } from './components/atom/Global';
 import Router from './router';
 
 axios.defaults.baseURL = 'https://www.nuseum.site';
+// axios.defaults.baseURL = 'http://127.0.0.1:8000';
 axios.defaults.withCredentials = true;
 
 function App() {
