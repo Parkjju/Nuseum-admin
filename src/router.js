@@ -6,6 +6,7 @@ import Home from './components/pages/Home';
 import Analysis from './components/pages/Analysis';
 import Preview from './components/pages/Preview';
 import Question from './components/pages/Question/Question';
+import QuestionDetail from './components/pages/QuestionDetail';
 
 function Router() {
     return (
@@ -18,6 +19,7 @@ function Router() {
                 <Route element={<Preview />} path='/:userId/preview' />
                 <Route element={<Analysis />} path='/:userId/analysis' />
                 <Route element={<Question />} path='/question' />
+                <Route element={<QuestionDetail />} path='/question/:id' />
             </Routes>
         </BrowserRouter>
     );
