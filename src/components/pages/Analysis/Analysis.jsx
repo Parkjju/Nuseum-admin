@@ -81,7 +81,7 @@ const Analysis = () => {
             const response = await axios.get(
                 `/api/v1/consumption/admin/analysis/${type}/?author=${
                     location.state.id
-                }&date=${date.getTime()}`,
+                }&date=${date.getTime()}&nutrient=yes`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -112,7 +112,7 @@ const Analysis = () => {
 
             // {'채소': 1, '과일': 2, '콩/두부': 3, '통곡물': 4, '버섯': 5, '해조류': 6, '견과': 7, '고기/생선/달걀': 8, '유제품': 9}
             setDateCount(response.data.day_count);
-
+            fetchNutritionWithoutSupplement(date, type);
             setNutrition({
                 energy: +res.energy,
                 protein: +res.protein,
@@ -218,6 +218,23 @@ const Analysis = () => {
         dha_epa: 0,
         water_amount: 0,
     });
+    const [nutritionWithoutSupplement, setNutritionWithoutSupplement] =
+        useState({
+            energy: 0,
+            protein: 0,
+            fat: 0,
+            carbohydrate: 0,
+            dietary_fiber: 0,
+            magnesium: 0,
+            vitamin_a: 0,
+            vitamin_d: 0,
+            vitamin_b6: 0,
+            folic_acid: 0,
+            vitamin_b12: 0,
+            tryptophan: 0,
+            dha_epa: 0,
+            water_amount: 0,
+        });
     const categoryCheck = (categoryArray) => {
         let copy = {
             1: false,
@@ -236,6 +253,78 @@ const Analysis = () => {
         }
 
         setEatCategory({ ...copy });
+    };
+
+    const fetchNutritionWithoutSupplement = async (d, type) => {
+        try {
+            let response = await axios.get(
+                `/api/v1/consumption/admin/analysis/${type}/?author=${
+                    location.state.id
+                }&date=${d.getTime()}&nutrient=no`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            let res = { ...response.data };
+
+            for (let i in res) {
+                if (i === 'category' || i === 'day_count') {
+                    continue;
+                }
+                res[i] = Number.isInteger(+res[i]) ? res[i] : res[i].toFixed(1);
+            }
+
+            setNutritionWithoutSupplement(res);
+        } catch (err) {
+            console.log('ERROR:', err);
+            if (err.response.status === 401) {
+                const { exp, token } = await handleExpired();
+                dispatch(
+                    authActions.login({
+                        token: token.data.access,
+                        exp,
+                    })
+                );
+                setLoading(false);
+            } else {
+                console.log(err);
+                alert('오류가 발생했습니다. 담당자에게 문의해주세요!');
+            }
+            let initializedNutrition = {
+                energy: 0,
+                protein: 0,
+                fat: 0,
+                carbohydrate: 0,
+                dietary_fiber: 0,
+                magnesium: 0,
+                vitamin_a: 0,
+                vitamin_d: 0,
+                vitamin_b6: 0,
+                folic_acid: 0,
+                vitamin_b12: 0,
+                tryptophan: 0,
+                dha_epa: 0,
+                water_amount: 0,
+            };
+
+            setNutrition(initializedNutrition);
+
+            setEatCategory({
+                1: false,
+                2: false,
+                3: false,
+                4: false,
+                5: false,
+                6: false,
+                7: false,
+                8: false,
+                9: false,
+            });
+            setLoading(false);
+            alert('이 날에는 기록하지 않으셨네요!');
+        }
     };
 
     const onChange = async (d) => {
@@ -460,6 +549,9 @@ const Analysis = () => {
                                             <RadarGraph
                                                 dateCount={dateCount}
                                                 data={nutrition}
+                                                dataWithoutSupplement={
+                                                    nutritionWithoutSupplement
+                                                }
                                             />
                                         </div>
                                     </S.NutrientBox>
