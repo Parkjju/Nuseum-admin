@@ -96,9 +96,6 @@ const Day = ({ item, isModify, refetchToday }) => {
                             <TagBox>
                                 {item[1].breakfast.data.map((meal, index) => (
                                     <Tag
-                                        onClick={() =>
-                                            requestFetchOnDayComponent(meal)
-                                        }
                                         key={index}
                                     >{`${meal.name} ${meal.amount}g 또는 ml`}</Tag>
                                 ))}
@@ -126,9 +123,6 @@ const Day = ({ item, isModify, refetchToday }) => {
                             <TagBox>
                                 {item[1].lunch.data.map((meal, index) => (
                                     <Tag
-                                        onClick={() =>
-                                            requestFetchOnDayComponent(meal)
-                                        }
                                         key={index}
                                     >{`${meal.name} ${meal.amount}g 또는 ml`}</Tag>
                                 ))}
@@ -156,9 +150,6 @@ const Day = ({ item, isModify, refetchToday }) => {
                             <TagBox>
                                 {item[1].dinner.data.map((meal, index) => (
                                     <Tag
-                                        onClick={() =>
-                                            requestFetchOnDayComponent(meal)
-                                        }
                                         key={index}
                                     >{`${meal.name} ${meal.amount}g 또는 ml`}</Tag>
                                 ))}
@@ -187,9 +178,6 @@ const Day = ({ item, isModify, refetchToday }) => {
                             <TagBox>
                                 {item[1].snack.data.map((meal, index) => (
                                     <Tag
-                                        onClick={() =>
-                                            requestFetchOnDayComponent(meal)
-                                        }
                                         key={index}
                                     >{`${meal.name} ${meal.amount}g 또는 ml`}</Tag>
                                 ))}
