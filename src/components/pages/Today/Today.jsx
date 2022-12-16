@@ -233,6 +233,21 @@ const Today = () => {
                         {isSelected[3] ? (
                             <RecommendTab droppableId='recommend' />
                         ) : null}
+                        {console.log(
+                            Object.values(list).forEach((item) =>
+                                Object.values(item).forEach((obj) => {
+                                    let arr = [];
+
+                                    obj?.data?.forEach((elem) => {
+                                        arr.push(
+                                            `${elem.name} ${elem.amount}g`
+                                        );
+                                    });
+
+                                    console.log(arr.join(' / '));
+                                })
+                            )
+                        )}
 
                         {Object.values(list).length > 0 && !sortByLatest
                             ? Object.entries(list).map((item) => (
