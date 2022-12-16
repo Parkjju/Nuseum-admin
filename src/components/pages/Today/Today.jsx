@@ -240,7 +240,13 @@ const Today = () => {
 
                                     obj?.data?.forEach((elem) => {
                                         arr.push(
-                                            `${elem.name} ${elem.amount}g`
+                                            `${elem.name}` +
+                                                `${
+                                                    elem.amount > 0
+                                                        ? ` ${elem.amount}` +
+                                                          'g'
+                                                        : ''
+                                                }`
                                         );
                                     });
 
